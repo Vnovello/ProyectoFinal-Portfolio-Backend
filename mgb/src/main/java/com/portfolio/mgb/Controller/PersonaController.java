@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/personas")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://frontendmgb.web.app")
 public class PersonaController {
 
     @Autowired
@@ -69,6 +70,20 @@ public class PersonaController {
 
         return new ResponseEntity(new Mensaje("Educacion creada"), HttpStatus.OK);
     }*/
+    
+     @PostMapping("/crear")
+    public ResponseEntity<?> create(@RequestBody dtoPersona dtopersona) {
+        if(StringUtils.isBlank(dtopersona.getNombre()))
+            return new ResponseEntity(new Mensaje("El nombre es obligatorio"), HttpStatus.BAD_REQUEST);
+        if(personaService.existsByNombre(dtopersona.getNombre()))
+            return new ResponseEntity(new Mensaje("Esa persona existe"), HttpStatus.BAD_REQUEST);
+//        Persona persona = new Persona(dtoper.getNombre(), dtoper.getApellido(), dtoper.getDescripcion(), dtoper.getImg());
+          Persona persona = new Persona(dtopersona.getNombre(), dtopersona.getApellido(), dtopersona.getDescripcion(), dtopersona.getImg());
+personaService.save(persona);
+        
+        return new ResponseEntity(new Mensaje("Persona agregada"), HttpStatus.OK);
+    }
+    
     @PutMapping("/update/{id}")
     public ResponseEntity<?> update(@PathVariable("id") int id, @RequestBody dtoPersona dtopersona) {
 
